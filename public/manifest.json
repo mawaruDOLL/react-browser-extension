@@ -1,0 +1,14 @@
+{
+	"name": "React Browser Extension",
+	"version": "0.1.0",
+	"description": "A sample React browser extension",
+	"manifest_version": 2,
+	"background": {
+		"persistent": false,
+		"scripts": ["background.js"]
+	},
+	"browser_action": {
+		"default_popup": "index.html",
+		"default_title": "React Browser Extension"
+	}
+}
