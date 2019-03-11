@@ -1,7 +1,8 @@
 const { resolve } = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const WebpackChromeReloaderPlugin = require("webpack-chrome-extension-reloader");
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const mode = process.env.NODE_ENV;
 const buildPath = "dist";
@@ -10,7 +11,7 @@ module.exports = {
   mode: mode,
   devtool: "inline-source-map",
   entry: {
-		main: "./src/index.js",
+		main: "./src/boot.tsx",
     background: "./public/background.js"
   },
   output: {
@@ -19,7 +20,7 @@ module.exports = {
     filename: "[name].bundle.js"
 	},
 	resolve: {
-		extensions: [".js"],
+		extensions: [".ts",".tsx",".js"],
 	},
   plugins: [
     new WebpackChromeReloaderPlugin(),
@@ -29,12 +30,15 @@ module.exports = {
 		}),
     new CopyWebpackPlugin([
       { from: "./public/" }
-    ])
+		]),
+		new ForkTsCheckerWebpackPlugin({
+			tsconfig: resolve(__dirname, "tsconfig.json")
+		}),
   ],
   module: {
     rules: [
       {
-        test: /\.js?$/,
+        test: /\.ts(x?)$/,
         exclude: /node_modules/,
         use: {
 					loader: "babel-loader",
@@ -44,6 +48,7 @@ module.exports = {
 							[
 								"@babel/preset-env"
 							],
+							"@babel/preset-typescript",
 							"@babel/preset-react"
 						],
 						plugins: [

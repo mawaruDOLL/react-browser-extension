@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "es2015",
+    "target": "es2015",
+    "jsx": "react",
+    "moduleResolution": "node"
+	},
+  "files": ["./src/boot.tsx"]
+}
