@@ -4,11 +4,14 @@
 	"description": "A sample React browser extension",
 	"manifest_version": 2,
 	"background": {
-		"persistent": false,
 		"scripts": ["background.js"]
 	},
 	"browser_action": {
-		"default_popup": "index.html",
+		"default_popup": "popup.html",
 		"default_title": "React Browser Extension"
+	},
+	"options_ui": {
+		"page": "options.html",
+		"chrome_style": true
 	}
 }

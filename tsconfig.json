@@ -7,5 +7,8 @@
     "jsx": "react",
     "moduleResolution": "node"
 	},
-  "files": ["./src/boot.tsx"]
+  "include": [
+		"./src/**/*",
+		"./node_modules/chrome-extension-async/*"
+	]
 }

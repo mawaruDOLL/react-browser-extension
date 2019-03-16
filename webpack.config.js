@@ -6,35 +6,60 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const mode = process.env.NODE_ENV;
 const buildPath = "dist";
+const isDevEnv = mode === 'development';
+
+const releaseOptions = {
+	release: !isDevEnv,
+	minify: {
+		collapseWhitespace: !isDevEnv,
+		removeComments: !isDevEnv
+	}
+}
+
+const webpackPlugins = [
+	new ForkTsCheckerWebpackPlugin({
+		tsconfig: resolve(__dirname, "tsconfig.json")
+	}),
+	new HtmlWebpackPlugin(Object.assign({
+		template: resolve(__dirname, "src/popup/popup.html"),
+		filename: "popup.html",
+		inject: true,
+		excludeChunks: ["options"]
+	}, releaseOptions)),
+	new HtmlWebpackPlugin(Object.assign({
+		template: resolve(__dirname, "src/options/options.html"),
+		filename: "options.html",
+		inject: true,
+		excludeChunks: ["popup"]
+	}, releaseOptions)),
+	new CopyWebpackPlugin([{
+		from: "./public/"
+	}])
+];
+
+if (isDevEnv) {
+	webpackPlugins.push(new WebpackChromeReloaderPlugin());
+}
 
 module.exports = {
   mode: mode,
-  devtool: "inline-source-map",
+  devtool: isDevEnv ? "inline-source-map" : false,
   entry: {
-		main: "./src/boot.tsx",
-    background: "./public/background.js"
+		polyfill: "@babel/polyfill",
+		chromeExtension: "chrome-extension-async",
+		popup: "./src/popup/index.tsx",
+		background: "./src/background.ts",
+		options: "./src/options/index.tsx"
   },
   output: {
     publicPath: ".",
     path: resolve(__dirname, buildPath),
-    filename: "[name].bundle.js"
+    filename: "[name].js"
 	},
 	resolve: {
 		extensions: [".ts",".tsx",".js"],
 	},
-  plugins: [
-    new WebpackChromeReloaderPlugin(),
-		new HtmlWebpackPlugin({
-			template: resolve(__dirname, "public/index.html"),
-			inject: true
-		}),
-    new CopyWebpackPlugin([
-      { from: "./public/" }
-		]),
-		new ForkTsCheckerWebpackPlugin({
-			tsconfig: resolve(__dirname, "tsconfig.json")
-		}),
-  ],
+  plugins: webpackPlugins,
   module: {
     rules: [
       {
